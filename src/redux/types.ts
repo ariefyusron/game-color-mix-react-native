@@ -28,7 +28,13 @@ export interface HomeState {
   listSeasons: any[];
 }
 
+interface Score {
+  username: string;
+  score: number;
+}
+
 export interface PersistState {
   language: string;
   username: string;
+  listScore: Score[];
 }

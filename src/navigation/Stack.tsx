@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import Home from "../screens/Home";
 import Play from "../screens/Play";
 import Login from "../screens/Login";
+import Result from "../screens/Result";
 import { Reducers } from "../redux/types";
 
 const { Navigator, Screen } = createStackNavigator();
@@ -34,6 +35,11 @@ const Stack = () => {
             name="Play"
             component={Play}
             options={{ title: "Color Mixer" }}
+          />
+          <Screen
+            name="Result"
+            component={Result}
+            options={{ title: "Result Screen" }}
           />
         </>
       )}

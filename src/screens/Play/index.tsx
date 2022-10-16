@@ -1,6 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert, ScrollView, Text, View } from "react-native";
 import { Button, Input, Stack } from "native-base";
+import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+
+import { saveScore } from "../../redux/actions";
 
 import styles from "./styles";
 
@@ -15,8 +19,11 @@ const initFormState: any = {
 };
 
 const Index = () => {
+  const dispatch = useDispatch();
+  const navigation = useNavigation() as any;
+
   const [timer, setTimer] = useState(initTimer);
-  const [colorRandom, setColorRandom] = useState("rgba(255,255,255, 1)");
+  const [colorRandom, setColorRandom] = useState("rgba(255,255,255,1)");
   const [formState, setFormState] = useState(initFormState);
   const [yourColor, setYourColor] = useState("rgba(255,255,255,1)");
   const [textHint, setTextHint] = useState("");
@@ -33,7 +40,7 @@ const Index = () => {
 
   const _getRandomColor = useCallback(() => {
     setColorRandom(
-      `rgba(${_getRandomRgb()},${_getRandomRgb()},${_getRandomRgb()}, 1)`
+      `rgba(${_getRandomRgb()},${_getRandomRgb()},${_getRandomRgb()},1)`
     );
   }, [_getRandomRgb]);
 
@@ -61,9 +68,38 @@ const Index = () => {
 
   const _handleChangeForm = useCallback(
     (name: string, value: string) => {
-      setFormState({ ...formState, [name]: value });
+      let colorMix = "";
+      if (name === "red") {
+        colorMix = `rgba(${value},${formState.green},${formState.blue},1)`;
+      } else if (name === "green") {
+        colorMix = `rgba(${formState.red},${value},${formState.blue},1)`;
+      } else if (name === "blue") {
+        colorMix = `rgba(${formState.red},${formState.green},${value},1)`;
+      }
+
+      if (colorMix === colorRandom) {
+        dispatch(saveScore(Number(score)));
+        navigation.replace("Result", {
+          finalScore: score,
+          totalTime: _convertTimer(initTimer - timer),
+          averageGuesses: countGuestColor,
+          hintUsed: textHint === "" ? 0 : 1,
+        });
+      } else {
+        setFormState({ ...formState, [name]: value });
+      }
     },
-    [formState]
+    [
+      _convertTimer,
+      colorRandom,
+      countGuestColor,
+      dispatch,
+      formState,
+      navigation,
+      score,
+      textHint,
+      timer,
+    ]
   );
 
   const _handleSubmit = useCallback(() => {
