@@ -166,7 +166,7 @@ const Index = () => {
         </Text>
       </View>
 
-      <ScrollView>
+      <ScrollView keyboardShouldPersistTaps="handled">
         <View style={styles.wrapCompareColor}>
           <View>
             <Text style={styles.titleContainerColor}>Guest this color!</Text>
