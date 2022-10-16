@@ -138,10 +138,22 @@ const Index = () => {
 
   const _handleUseHint = useCallback(() => {
     const hint = colorRandom.slice(5, colorRandom.length - 1).split(",")[0];
+    const hint2 = colorRandom.slice(5, colorRandom.length - 1).split(",")[1];
+    const hint3 = colorRandom.slice(5, colorRandom.length - 1).split(",")[2];
 
-    setTextHint(hint);
+    let result = "";
+
+    if (textHint === "") {
+      result = hint;
+    } else if (textHint.split(",").length === 1) {
+      result = `${hint},${hint2}`;
+    } else if (textHint.split(",").length === 2) {
+      result = `${hint},${hint2},${hint3}`;
+    }
+
+    setTextHint(result);
     setTimer(Math.floor(timer / 2));
-  }, [colorRandom, timer]);
+  }, [colorRandom, textHint, timer]);
 
   return (
     <View style={styles.container}>
@@ -215,7 +227,7 @@ const Index = () => {
             <ButtonCustom
               width="45%"
               onPress={_handleUseHint}
-              isDisabled={textHint !== ""}
+              isDisabled={textHint.split(",").length === 3}
             >
               SHOW HINT
             </ButtonCustom>
