@@ -18,14 +18,7 @@ export interface Action {
 
 // Reducer
 export interface Reducers {
-  home: HomeState;
   persist: PersistState;
-}
-
-export interface HomeState {
-  data: any[];
-  isLoadingGetSeason: boolean;
-  listSeasons: any[];
 }
 
 interface Score {
@@ -34,7 +27,6 @@ interface Score {
 }
 
 export interface PersistState {
-  language: string;
   username: string;
   listScore: Score[];
 }

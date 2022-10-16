@@ -2,7 +2,6 @@ import React, { memo } from "react";
 import { Image } from "react-native";
 
 import { COLORS, ICONS, IconsType } from "../../configs";
-import { scale } from "../../utils";
 
 interface Props {
   size?: number;
@@ -18,7 +17,7 @@ const Component = ({ size, name, color }: Props) => (
 );
 
 Component.defaultProps = {
-  size: scale(6),
+  size: 24,
   color: COLORS.black,
 };
 
