@@ -30,4 +30,5 @@ export interface HomeState {
 
 export interface PersistState {
   language: string;
+  username: string;
 }
