@@ -22,6 +22,7 @@ const Index = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation() as any;
 
+  const [isEnd, setIsEnd] = useState(true);
   const [timer, setTimer] = useState(initTimer);
   const [colorRandom, setColorRandom] = useState("rgba(255,255,255,1)");
   const [formState, setFormState] = useState(initFormState);
@@ -51,23 +52,42 @@ const Index = () => {
     _getRandomColor();
   }, [_getRandomColor]);
 
+  const _convertTimer = useCallback((time: number) => {
+    const minutes = `0${Math.floor(time / 60)}`;
+    const seconds = `0${time - Number(minutes) * 60}`;
+    return `${minutes.substr(-2)}:${seconds.substr(-2)}`;
+  }, []);
+
+  const _onGameOver = useCallback(() => {
+    dispatch(saveScore(0));
+    navigation.replace("Result", {
+      finalScore: 0,
+      totalTime: _convertTimer(initTimer - timer),
+      averageGuesses: countGuestColor,
+      hintUsed: textHint === "" ? 0 : 1,
+    });
+  }, [_convertTimer, countGuestColor, dispatch, navigation, textHint, timer]);
+
   useEffect(() => {
-    if (timer > 0) {
+    if (timer >= 0) {
       timeInterval = setInterval(() => {
-        setTimer(timer - 1);
+        const countTimer = timer - 1;
+
+        if (countTimer >= 0) {
+          setTimer(countTimer);
+        } else if (isEnd) {
+          setIsEnd(false);
+          Alert.alert("GAME OVER", "Good Game Great Eyes!", [
+            { text: "SHOW RESULT", onPress: _onGameOver },
+          ]);
+        }
       }, 1000);
     } else {
       clearInterval(timeInterval);
     }
 
     return () => clearInterval(timeInterval);
-  }, [timer]);
-
-  const _convertTimer = useCallback((time: number) => {
-    const minutes = `0${Math.floor(time / 60)}`;
-    const seconds = `0${time - Number(minutes) * 60}`;
-    return `${minutes.substr(-2)}:${seconds.substr(-2)}`;
-  }, []);
+  }, [_onGameOver, isEnd, timer]);
 
   const _handleChangeForm = useCallback(
     (name: string, value: string) => {
