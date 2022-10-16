@@ -12,13 +12,14 @@ import Login from "../screens/Login";
 import Result from "../screens/Result";
 import HighScores from "../screens/HighScores";
 import { Reducers } from "../redux/types";
+import { CustomDrawer } from "../components";
 
 const { Navigator, Screen } = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 const DrawerComponent = () => {
   return (
-    <Drawer.Navigator>
+    <Drawer.Navigator drawerContent={(props) => <CustomDrawer {...props} />}>
       <Drawer.Screen name="Home" component={Home} />
       <Drawer.Screen name="HighScores" component={HighScores} />
     </Drawer.Navigator>
