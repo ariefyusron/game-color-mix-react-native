@@ -29,7 +29,11 @@ const Index = () => {
         >
           PLAY AGAIN
         </ButtonCustom>
-        <ButtonCustom width="45%" marginBottom={2}>
+        <ButtonCustom
+          width="45%"
+          marginBottom={2}
+          onPress={() => navigation.navigate("HighScores")}
+        >
           HIGH SCORES
         </ButtonCustom>
         <ButtonCustom width="45%" onPress={() => navigation.goBack()}>

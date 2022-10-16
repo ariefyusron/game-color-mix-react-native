@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Alert, ScrollView, Text, View } from "react-native";
 import { Button, Input, Stack } from "native-base";
 import { useNavigation } from "@react-navigation/native";
@@ -29,12 +29,15 @@ const Index = () => {
   const [textHint, setTextHint] = useState("");
   const [countGuestColor, setCountGuestColor] = useState(0);
 
-  const score = useMemo(() => {
-    const hintMultiplier = textHint === "" ? 1 : 0.5;
-    const guestMultiplier = countGuestColor < 5 ? 5 - countGuestColor : 1;
+  const _getScore = useCallback(
+    (countGuest: number) => {
+      const hintMultiplier = textHint === "" ? 1 : 0.5;
+      const guestMultiplier = countGuest < 5 ? 5 - countGuest : 1;
 
-    return Math.floor(hintMultiplier * guestMultiplier * timer);
-  }, [countGuestColor, textHint, timer]);
+      return Math.floor(hintMultiplier * guestMultiplier * timer);
+    },
+    [textHint, timer]
+  );
 
   const _getRandomRgb = useCallback(() => Math.floor(Math.random() * 256), []);
 
@@ -68,38 +71,9 @@ const Index = () => {
 
   const _handleChangeForm = useCallback(
     (name: string, value: string) => {
-      let colorMix = "";
-      if (name === "red") {
-        colorMix = `rgba(${value},${formState.green},${formState.blue},1)`;
-      } else if (name === "green") {
-        colorMix = `rgba(${formState.red},${value},${formState.blue},1)`;
-      } else if (name === "blue") {
-        colorMix = `rgba(${formState.red},${formState.green},${value},1)`;
-      }
-
-      if (colorMix === colorRandom) {
-        dispatch(saveScore(Number(score)));
-        navigation.replace("Result", {
-          finalScore: score,
-          totalTime: _convertTimer(initTimer - timer),
-          averageGuesses: countGuestColor,
-          hintUsed: textHint === "" ? 0 : 1,
-        });
-      } else {
-        setFormState({ ...formState, [name]: value });
-      }
+      setFormState({ ...formState, [name]: value });
     },
-    [
-      _convertTimer,
-      colorRandom,
-      countGuestColor,
-      dispatch,
-      formState,
-      navigation,
-      score,
-      textHint,
-      timer,
-    ]
+    [formState]
   );
 
   const _handleSubmit = useCallback(() => {
@@ -112,14 +86,35 @@ const Index = () => {
     });
 
     if (success) {
-      setYourColor(
-        `rgba(${formState.red},${formState.green},${formState.blue},1)`
-      );
-      setCountGuestColor(countGuestColor + 1);
+      const colorMix = `rgba(${formState.red},${formState.green},${formState.blue},1)`;
+      const averageGuesses = countGuestColor + 1;
+
+      if (colorMix === colorRandom) {
+        dispatch(saveScore(Number(_getScore(averageGuesses))));
+        navigation.replace("Result", {
+          finalScore: _getScore(averageGuesses),
+          totalTime: _convertTimer(initTimer - timer),
+          averageGuesses,
+          hintUsed: textHint === "" ? 0 : 1,
+        });
+      } else {
+        setYourColor(colorMix);
+        setCountGuestColor(averageGuesses);
+      }
     } else {
       Alert.alert("Input hanya menerima angka 0 sampai 255");
     }
-  }, [countGuestColor, formState]);
+  }, [
+    _convertTimer,
+    _getScore,
+    colorRandom,
+    countGuestColor,
+    dispatch,
+    formState,
+    navigation,
+    textHint,
+    timer,
+  ]);
 
   const _handleUseHint = useCallback(() => {
     const hint = colorRandom.slice(5, colorRandom.length - 1).split(",")[0];
@@ -146,7 +141,9 @@ const Index = () => {
       </View>
 
       <View style={styles.wrapTextScore}>
-        <Text style={styles.textScore}>{`Score: ${score}`}</Text>
+        <Text style={styles.textScore}>
+          {`Score: ${_getScore(countGuestColor)}`}
+        </Text>
       </View>
 
       <ScrollView>
