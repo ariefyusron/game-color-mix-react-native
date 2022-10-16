@@ -4,6 +4,7 @@ import {
   createStackNavigator,
 } from "@react-navigation/stack";
 import { useSelector } from "react-redux";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 
 import Home from "../screens/Home";
 import Play from "../screens/Play";
@@ -12,6 +13,15 @@ import Result from "../screens/Result";
 import { Reducers } from "../redux/types";
 
 const { Navigator, Screen } = createStackNavigator();
+const Drawer = createDrawerNavigator();
+
+const DrawerComponent = () => {
+  return (
+    <Drawer.Navigator>
+      <Drawer.Screen name="Home" component={Home} />
+    </Drawer.Navigator>
+  );
+};
 
 const Stack = () => {
   const persistState = useSelector((state: Reducers) => state.persist);
@@ -27,8 +37,8 @@ const Stack = () => {
       ) : (
         <>
           <Screen
-            name="Home"
-            component={Home}
+            name="Drawer"
+            component={DrawerComponent}
             options={{ header: () => null }}
           />
           <Screen
